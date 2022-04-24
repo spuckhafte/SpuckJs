@@ -2,14 +2,16 @@ const Navbar = new Spuck({ type: 'nav', parent: '#head', class: 'navbar' });
 Navbar.render();
 Navbar.mount();
 
+const Head = [Navbar] // best practice
+
 const ItemName = ['Home', 'About', 'Contact'];
-const NavItems = []
+const NavItems = [] // best practice
 for (let item of ItemName) {
     const Item = new Spuck({ type: 'a', parent: '.navbar', class: 'nav-item', id: ItemName.indexOf(item).toString() });
     Item.prop = { text: item }
     Item.render();
     Item.mount();
-    NavItems.push(Item);
+    NavItems.push(Item); // best practice
 }
 
 const Form = new Spuck({ type: 'form', parent: '#body', class: 'form' });
@@ -45,3 +47,6 @@ function sayName(name) {
     DisplayName.prop.text = `Hellow ${name}`;
     DisplayName.reRender();
 }
+
+const Body = [Form, DisplayName] // best practice
+const FormsEls = [NameInput, Button] // best practice
