@@ -45,6 +45,3 @@ function sayName(name) {
     DisplayName.prop.text = `Hellow ${name}`;
     DisplayName.reRender();
 }
-
-const FormEls = [NameInput, Button];
-const formRender = () => FormEls.forEach(item => item.reRender());
