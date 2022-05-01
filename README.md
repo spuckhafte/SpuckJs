@@ -18,57 +18,58 @@ Each object of class `Spuck` is an HTML element, which can be worked upon.
 ### index.js
 ```js
 // initialize the element
-const Heading = new Spuck({ type: 'h1', parent: '#app', class: 'heading', id: 'heading' })
+			const Heading = new Spuck({ type: 'h1', parent: '#app', class: 'heading', id: 'heading' })
 
-// Define properties of "Heading", i.e, "text" and "css"
-Heading.prop = {
-  text: "SpuckJs",
-  css: { // normal css properties, following camel case (margin-inline -> marginInline)
-    textAlign: 'center'
-  }
-}
-Heading.render(); // render element
-Heading.mount(); // Put the element in DOM
-
-
-const NameInput = new Spuck({ type: 'input', parent: '#app', class: 'name' })
-NameInput.prop = {
-  css: {
-    width: '20rem', height: '3rem', backgroundColor: 'black',
-    outline: 'none', border: 'none', color: 'white',
-    fontSize: '1.5rem', fontWeight: 'bold',
-  }
-}
-NameInput.attr = { autofocus: 'true', autocomplete: 'off' }
-
-// define events on an element and assign callbacks to them
-NameInput.events = {
-  keyup: e => putName(e.target.value)
-}
-
-NameInput.render();
-NameInput.mount();
+			// Define properties of "Heading", i.e, "text" and "css"
+			Heading.prop = {
+			  text: "SpuckJs",
+			  css: { // normal css properties, following camel case (margin-inline -> marginInline)
+			    textAlign: 'center'
+			  }
+			}
+			Heading.make(); // it render and mounts the element to the dom
 
 
-const NameDisplay = new Spuck({ type: 'h2', parent: '#app' })
-NameDisplay.prop = { text: '', css: { cursor: 'pointer', color: 'red', width: 'fit-content' } }
-NameDisplay.events = { click: changeColor }
+			const NameInput = new Spuck({ type: 'input', parent: '#app', class: 'name', id: 'inp' })
+			NameInput.render(); // makes an element (does not put it in the dom)
 
-NameDisplay.render();
-NameDisplay.mount();
+			const setValue = NameInput.$state('value', 'ddd') // state of the element, returns a function to update it
+
+			NameInput.prop = {
+			  value: '$-value', // refer to the state named "value" by using $- as prefix 
+			  css: {
+			    width: '20rem', height: '3rem', backgroundColor: 'black',
+			    outline: 'none', border: 'none', color: 'white',
+			    fontSize: '1.5rem', fontWeight: 'bold',
+			  }
+			}
+			NameInput.attr = { autofocus: 'true', autocomplete: 'off' }
+
+			// define events on an element and assign callbacks to them
+			NameInput.events = {
+			  keyup: e => setValue(e.target.value) // change the "value" state when someone types
+			}
+			NameInput.make('re'); // remake(update) the rendered element
 
 
-function putName(nameVal) {
-  NameDisplay.prop.text = nameVal;
-  NameDisplay.reRender(); // render the element again to see changes
-}
+			const NameDisplay = new Spuck({ type: 'h2', parent: '#app', id: 'display' })
+			NameDisplay.render();
 
-function changeColor() {
-  let color = NameDisplay.prop.css.color === 'red' ? 'blue' : 'red';
-  NameDisplay.prop.css.color = color;
+			NameInput.init.pseudoChildren = [NameDisplay] 
+			/* 
+				set NameDis as pseudoChild of NameInp to pass down state of the Parent (input el)
+				to its children (only NameDisplay in this case). Now NameDisplay can access these
+				states as pseudo-states by using $$- as prefix, eg. $$-someStateOfParent.
+			*/
 
-  NameDisplay.reRender();
-}
+			const setColor = NameDisplay.$state('color', 'red'); // this state will manage the color of the text
+
+			NameDisplay.prop = { 
+				text: '$$-value', // use the "value" state of NameInp (pseudo-parent)
+				css: { cursor: 'pointer', color: '$-color', width: 'fit-content' } 
+			}
+			NameDisplay.events = { click: () => setColor(NameDisplay.getState('color') === 'red' ? 'blue' : 'red') }
+			NameDisplay.make('re');
 ```
 
 ### Result:
