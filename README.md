@@ -2,9 +2,14 @@
 **Javscript Library**<br/>
 *Under Development*
 
+# What?
+`SpuckJs` is a Js library which converts pure Js Objects into DOM elements.<br/> 
+Each object of class `Spuck` is a Virtual element which you can put in the DOM.<br/><br/> 
+It features **state management**.<br/>
+You can pass `states` of an element to others (parents or children or partners, doesn't matter) by making them `pseudo-children` of the main element.
+
+
 # How?
-Each object of class `Spuck` is an HTML element, which can be worked upon.
-<br/>
 ### index.html
 ```html
 <head>
