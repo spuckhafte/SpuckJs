@@ -62,6 +62,8 @@ class Spuck {
                 el.addEventListener(event, this.events[event]);
             }
         }
+
+        return this
     }
 
     mount() { // put the element in dom
