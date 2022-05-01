@@ -33,7 +33,7 @@ Heading.make(); // it render and mounts the element to the dom
 const NameInput = new Spuck({ type: 'input', parent: '#app', class: 'name', id: 'inp' })
 NameInput.render(); // makes an element (does not put it in the dom)
 
-const setValue = NameInput.$state('value', 'ddd') // state of the element, returns a function to update it
+const setValue = NameInput.$state('value', '') // state of the element, returns a function to update it
 
 NameInput.prop = {
   value: '$-value', // refer to the state named "value" by using $- as prefix 
