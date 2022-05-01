@@ -82,3 +82,40 @@ NameDisplay.make('re');
 
 https://user-images.githubusercontent.com/70335252/164968898-17029eb5-cca6-4769-ace1-b67455bc495a.mp4
 
+# Comparison:
+**SpuckJs - state managed**
+```js
+const Input = new Spuck({ type: 'input', parent: '#app' }).render();
+const setValue = Input.$state('value', '');
+Input.attr = { value: '$-value', autofocus: 'true' };
+Input.events = { keyup: e => setValue(e.target.value) };
+Input.make('re');
+const Display = new Spuck({ type: 'h4', parent: '#app' }).render();
+Input.init.pseudoChildren = [Display];
+Input.render('re');
+const setColor = Display.$state('color', 'red');
+Display.prop = { text: '$$-value', css: { color: '$-color', cursor: 'pointer', userSelect: 'none' } };
+Display.events = { click: () => setColor(Display.getState('color') === 'blue' ? 'red' : 'blue') };
+Display.make('re');
+```
+**SpuckJs - no state**
+```js
+const Input = new Spuck({ type: 'input', parent: '#app' }, {}, {}, { autofocus: 'true' }).render();
+const Display = new Spuck({ type: 'h4', parent: '#app' }).render();
+Display.prop = { text: '', css: { color: 'red', userSelect: 'none' } }
+Display.events = { click: () => Display.prop.css.color = Display.prop.css.color === 'blue' ? 'red' : 'blue'; Display.render('re') };
+Input.events = { keyup: e => { Display.prop.text = e.target.value; Display.render('re') } };
+[Input, Display].forEach(i => i.make('re'));
+```
+**VanillaJS - no state**
+```js
+const Input = document.createElement('input');
+const Display = document.createElement('h4');
+Input.setAttribute('autofocus', true);
+Input.addEventListener('keyup', e => Display.innerHTML = e.target.value);
+Object.assign(Display.style, { color: 'red', userSelect: 'none', cursor: 'pointer' });
+Display.addEventListener('click', () => Display.style.color = Display.style.color === 'blue' ? 'red': 'blue');
+document.querySelector('#app').appendChild(Input);
+document.querySelector('#app').appendChild(Display);
+```
+
