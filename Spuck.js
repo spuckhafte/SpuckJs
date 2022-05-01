@@ -14,7 +14,7 @@ class Spuck {
     _state // states of the elements
     _pseudoState // states of the pseudo-parent elements (pseudo states), if any
 
-    render(query, t) { // creates or updates an element
+    render(query) { // creates or updates an element
         // query -> argument to trigger re-rendering, if need, it just updates the properties of the existing element
 
         const el = query === 're' ? this.el : document.createElement(this.init.type); // grab the HTML element 
