@@ -66,6 +66,7 @@ NameInput.init.pseudoChildren = [NameDisplay]
 	to its children (only NameDisplay in this case). Now NameDisplay can access these
 	states as pseudo-states by using $$- as prefix, eg. $$-someStateOfParent.
 */
+NameInput.render('re');
 
 const setColor = NameDisplay.$state('color', 'red'); // this state will manage the color of the text
 
