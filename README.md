@@ -18,58 +18,58 @@ Each object of class `Spuck` is an HTML element, which can be worked upon.
 ### index.js
 ```js
 // initialize the element
-			const Heading = new Spuck({ type: 'h1', parent: '#app', class: 'heading', id: 'heading' })
+const Heading = new Spuck({ type: 'h1', parent: '#app', class: 'heading', id: 'heading' })
 
-			// Define properties of "Heading", i.e, "text" and "css"
-			Heading.prop = {
-			  text: "SpuckJs",
-			  css: { // normal css properties, following camel case (margin-inline -> marginInline)
-			    textAlign: 'center'
-			  }
-			}
-			Heading.make(); // it render and mounts the element to the dom
-
-
-			const NameInput = new Spuck({ type: 'input', parent: '#app', class: 'name', id: 'inp' })
-			NameInput.render(); // makes an element (does not put it in the dom)
-
-			const setValue = NameInput.$state('value', 'ddd') // state of the element, returns a function to update it
-
-			NameInput.prop = {
-			  value: '$-value', // refer to the state named "value" by using $- as prefix 
-			  css: {
-			    width: '20rem', height: '3rem', backgroundColor: 'black',
-			    outline: 'none', border: 'none', color: 'white',
-			    fontSize: '1.5rem', fontWeight: 'bold',
-			  }
-			}
-			NameInput.attr = { autofocus: 'true', autocomplete: 'off' }
-
-			// define events on an element and assign callbacks to them
-			NameInput.events = {
-			  keyup: e => setValue(e.target.value) // change the "value" state when someone types
-			}
-			NameInput.make('re'); // remake(update) the rendered element
+// Define properties of "Heading", i.e, "text" and "css"
+Heading.prop = {
+  text: "SpuckJs",
+  css: { // normal css properties, following camel case (margin-inline -> marginInline)
+    textAlign: 'center'
+  }
+}
+Heading.make(); // it render and mounts the element to the dom
 
 
-			const NameDisplay = new Spuck({ type: 'h2', parent: '#app', id: 'display' })
-			NameDisplay.render();
+const NameInput = new Spuck({ type: 'input', parent: '#app', class: 'name', id: 'inp' })
+NameInput.render(); // makes an element (does not put it in the dom)
 
-			NameInput.init.pseudoChildren = [NameDisplay] 
-			/* 
-				set NameDis as pseudoChild of NameInp to pass down state of the Parent (input el)
-				to its children (only NameDisplay in this case). Now NameDisplay can access these
-				states as pseudo-states by using $$- as prefix, eg. $$-someStateOfParent.
-			*/
+const setValue = NameInput.$state('value', 'ddd') // state of the element, returns a function to update it
 
-			const setColor = NameDisplay.$state('color', 'red'); // this state will manage the color of the text
+NameInput.prop = {
+  value: '$-value', // refer to the state named "value" by using $- as prefix 
+  css: {
+    width: '20rem', height: '3rem', backgroundColor: 'black',
+    outline: 'none', border: 'none', color: 'white',
+    fontSize: '1.5rem', fontWeight: 'bold',
+  }
+}
+NameInput.attr = { autofocus: 'true', autocomplete: 'off' }
 
-			NameDisplay.prop = { 
-				text: '$$-value', // use the "value" state of NameInp (pseudo-parent)
-				css: { cursor: 'pointer', color: '$-color', width: 'fit-content' } 
-			}
-			NameDisplay.events = { click: () => setColor(NameDisplay.getState('color') === 'red' ? 'blue' : 'red') }
-			NameDisplay.make('re');
+// define events on an element and assign callbacks to them
+NameInput.events = {
+  keyup: e => setValue(e.target.value) // change the "value" state when someone types
+}
+NameInput.make('re'); // remake(update) the rendered element
+
+
+const NameDisplay = new Spuck({ type: 'h2', parent: '#app', id: 'display' })
+NameDisplay.render();
+
+NameInput.init.pseudoChildren = [NameDisplay] 
+/* 
+	set NameDis as pseudoChild of NameInp to pass down state of the Parent (input el)
+	to its children (only NameDisplay in this case). Now NameDisplay can access these
+	states as pseudo-states by using $$- as prefix, eg. $$-someStateOfParent.
+*/
+
+const setColor = NameDisplay.$state('color', 'red'); // this state will manage the color of the text
+
+NameDisplay.prop = { 
+	text: '$$-value', // use the "value" state of NameInp (pseudo-parent)
+	css: { cursor: 'pointer', color: '$-color', width: 'fit-content' } 
+}
+NameDisplay.events = { click: () => setColor(NameDisplay.getState('color') === 'red' ? 'blue' : 'red') }
+NameDisplay.make('re');
 ```
 
 ### Result:
