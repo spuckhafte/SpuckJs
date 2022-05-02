@@ -82,7 +82,7 @@ NameDisplay.make('re');
 
 https://user-images.githubusercontent.com/70335252/164968898-17029eb5-cca6-4769-ace1-b67455bc495a.mp4
 
-# Comparison:
+# Comparison 1:
 **SpuckJs - state managed**
 ```js
 const Input = new Spuck({ type: 'input', parent: '#app' }).render();
@@ -118,4 +118,43 @@ Display.addEventListener('click', () => Display.style.color = Display.style.colo
 document.querySelector('#app').appendChild(Input);
 document.querySelector('#app').appendChild(Display);
 ```
+
+# Comparison 2:
+**SpuckJs - state managed**
+```js
+const Parent = new Spuck({ type: 'div', parent: '#app' }).render();
+const setBg = Parent.$state('color', 'red');
+Parent.prop = { css: { width: '50px', height:'50px', background: '$-color', cursor: 'pointer', marginBlock: '2em' } };
+Parent.events = { click: () => setBg('#'+Math.floor(Math.random()*16777215).toString(16)) };
+Parent.make('re');
+for (i=1; i <= 3; i++) {
+	const Child = new Spuck({ type: 'div', parent: '#app', id: `${i}` }).render();
+	Parent.init.pseudoChildren = Parent.init.pseudoChildren ? [...Parent.init.pseudoChildren, Child] : [Child];
+	Parent.render('re');
+	Child.prop = { css: { width: '50px', height: '50px', background: '$$-color', marginBlock: '2px' } };
+	Child.make('re')
+}
+```
+**VanillaJs - no state**
+```js
+let Parent = document.createElement('div');
+Object.assign(Parent.style, { width: '50px',height: '50px',background: 'red',cursor: 'pointer',marginBlock: '2em' });
+let children = [];
+for (i=1; i<=3; i++) {
+	let Child = document.createElement('div')
+	Object.assign(Child.style, { width: '50px', height: '50px', background: 'red', marginBlock: '2px' })
+	children.push(Child)
+}
+Parent.addEventListener('click', () => {
+	let color = '#'+Math.floor(Math.random()*16777215).toString(16)
+	Object.assign(Parent.style, { background: color })
+	children.forEach(child => child.style.background = color);
+})
+document.querySelector('#app').appendChild(Parent)
+children.forEach(el => document.querySelector('#app').appendChild(el))
+```
+
+**When first block is clicked, all the blocks change their color**<br/>
+<img width="46" alt="Screenshot 2022-05-02 094632" src="https://user-images.githubusercontent.com/70335252/166183626-e4e437e4-2192-42d5-9bfa-8cdf664e8632.png">
+
 
