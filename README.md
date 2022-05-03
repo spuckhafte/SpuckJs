@@ -255,6 +255,8 @@ Display.addEventListener('click', () => Display.style.color = Display.style.colo
 document.querySelector('#app').appendChild(Input);
 document.querySelector('#app').appendChild(Display);
 ```
+![comparison](https://user-images.githubusercontent.com/70335252/166475079-976f41c2-afba-4631-9e0c-1212b334e791.gif)
+
 
 # Comparison 2:
 **SpuckJs - state managed**
