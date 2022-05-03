@@ -9,7 +9,7 @@ class Spuck {
         this.#_effects = {}; // { 1: [effectFunc, [dep]] }
         this.#_deps = {}; // { '$-state': [value, firstTimeOrNot] }
     }
- 
+
     #_SP = '$-' // state prefix
     #_CSP = '$$-' // children (pseudo) state prefix
 
@@ -31,11 +31,11 @@ class Spuck {
 
         // set pseudo-states of the pesudo-children if any 
         this.init.pseudoChildren && this.init.pseudoChildren.forEach(child => {
-            child._pseudoState = { ...this._state }
+            child._pseudoState = Object.keys(child._pseudoState).length === 0 ? { ...this._state } : { ...child._pseudoState, ...this._state }
         })
 
         // set attributes, either hard-coded or state-managed 
-        if (this.attr && Object.keys(this.attr).length > 0) { 
+        if (this.attr && Object.keys(this.attr).length > 0) {
             for (let key in this.attr) {
                 if (!this.check(this.attr[key])) el.setAttribute(key, this.attr[key]);
                 else el.setAttribute(key, this.formatString(this.attr[key]));
@@ -78,7 +78,7 @@ class Spuck {
                     alteredDeps.push(depend)
                 }
             })
-            
+
             Object.keys(this.#_effects).forEach(_effectIndex => {
                 let effect = this.#_effects[_effectIndex];
                 for (let dep of effect[1]) {
@@ -138,8 +138,17 @@ class Spuck {
     }
 
     changeVal(val) { // converts prefixed state name or "pseudo-state name" to the state value
-        if (val.startsWith(this.#_SP)) return this.getState(this.#_getStateName(val));
-        if (val.startsWith(this.#_CSP)) return this.getPseudoState(this.#_getStateName(val));
+        if (val.startsWith(this.#_SP)) { 
+            let _stateName = this.#_getStateName(val);
+            if (this._state[_stateName]) return this.getState(_stateName);
+            else return val;
+        }
+        if (val.startsWith(this.#_CSP)) {
+            let _stateName = this.#_getStateName(val);
+            if (this._pseudoState[_stateName]) return this.getPseudoState(_stateName);
+            else return val;
+        }
+
     }
 
     formatString(text) { // formats a string, converting any $-state to its value
