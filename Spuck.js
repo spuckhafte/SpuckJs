@@ -23,7 +23,19 @@ class Spuck {
 
         const el = query === 're' ? this.el : document.createElement(this.init.type); // grab the HTML element 
         this.el = el;
-        this.init.class && this.init.class.split(' ').forEach(_cl => el.classList.add(_cl)) // add classes
+
+        this.el.className = '';
+        this.init.class && this.init.class.split(' ').forEach(_cl => {
+            if (this.check(_cl)) {
+                if (_cl.startsWith(this.#_SP)) {
+                    let _stateName = this.#_getStateName(_cl);
+                    if (this.getState(_stateName) !== '') el.classList.add(this.getState(_stateName));
+                } else {
+                    let _stateName = this.#_getStateName(_cl);
+                    if (this.getPseudoState(_stateName) !== '') el.classList.add(this.getPseudoState(_stateName));
+                }
+            } else el.classList.add(_cl);
+        })
         this.init.id && !this.check(this.init.id) && el.setAttribute('id', this.init.id); // add id
 
         // add id if it's set as some state's name by extracting it
@@ -130,6 +142,7 @@ class Spuck {
         this.render('re'); // reRender the element
         // reRender all the children
         if (this.init.pseudoChildren) this.init.pseudoChildren.forEach(child => child.render('re'));
+        return _finVal;
     }
 
     #_getStateName(_stateName) { // gets the name of the value by removing the State Prefix or Children SP
@@ -138,7 +151,7 @@ class Spuck {
     }
 
     changeVal(val) { // converts prefixed state name or "pseudo-state name" to the state value
-        if (val.startsWith(this.#_SP)) { 
+        if (val.startsWith(this.#_SP)) {
             let _stateName = this.#_getStateName(val);
             if (this._state[_stateName]) return this.getState(_stateName);
             else return val;
