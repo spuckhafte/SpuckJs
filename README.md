@@ -1,15 +1,146 @@
+<p align='center'><img width='400' height='300' src='https://user-images.githubusercontent.com/70335252/166430266-10f9f4af-4eed-4ee4-b5b5-7d0837492a0e.jpeg'></p>
+
+
 # SpuckJs
 **Javscript Library**<br/>
 *Under Development*
 
-# What?
+# DOCUMENTATION
 `SpuckJs` is a Js library which converts pure Js Objects into DOM elements.<br/> 
 Each object of class `Spuck` is a Virtual element which you can put in the DOM.<br/><br/> 
-It features **state management**.<br/>
-You can pass `states` of an element to others (parents or children or partners, doesn't matter) by making them `pseudo-children` of the main element.
 
+## new Spuck()
+Create a virtual element, an object using the `Spuck` class.<br>
+You first `initialize` it by defining it's type, parent element and classes and ids.<br>
+Then define its `properties`, like **text** and **css**, bind `events` to it and define `attributes`.
+```js
+const Button = new Spuck()
+// constructor Spuck(init: {}, prop: {}, events: {}, attr: {}): Spuck
 
-# How?
+/*	others:
+	* this._state = {}; // { stateName: [stateValue, changeStateFunction] }
+	* this._pseudoState = {}; // { stateName: [stateValue, changeStateFunction] }
+	* this.#_effects = {}; // { 1: [effectFunc, [dep]] }
+	* this.#_deps = {}; // { '$-state': [value, firstTimeOrNot] }
+*/, these are managed by the library
+```
+
+## render()
+You render an element manually when you when you define a bunch of properties and then wanna add it to the element.<br>
+It requires a `query` as parameter to be `'re'` when you are rendering it second or more times, `render('re')`.<br>
+When `query = 're'`, the element just gets updated with new properties, otherwise a new one is created.<br>
+It's great if you ***render*** the element while it's created, cause `effect` and `state` can only be used in a *rendered* element
+```js
+const Button = new Spuck({ type: 'button', parent: '#app', class: 'class1 class2', id: 'something' }).render();
+// intializing it that way is quite handy, you can also do it in a separate line: "Button.init = {...}"
+Button.prop = { text: 'lorem', css: { cursor: 'pointer', marginInline: '2px' } }
+Button.attr = {...} ; Button.events = { click: someFunc, mouseover: () => func(param) }
+```
+After defining some properties, you re-render (as it's already rendered) it
+```js
+Button.render('re')
+```
+But if you want to put it in the **DOM** now, you can use this:
+```js
+Button.render('re')
+Button.mount() // put's it in the DOM
+// or use
+Button.make('re') // combines render() and mount(), passes the parameter to render()
+```
+**You can use `render` even after the using `make` (putting it to DOM), it will update the mounted element at any point of time**
+
+# State and Effect Management
+
+## $state()
+Define a state with `$state` function and use it by referring to it's name in strings or using `getState` function.
+
+`getState()` will not change the value when state is changed, it will store a static value, it can change when the whole code re-runs, *for eg.* when it is used in a **loop** or bind to an event.<br>
+
+Unlike `getState`, reffering state using its name in strings (`'$-state'`) changes it's value when the state changes.<br>
+
+`$state` returns a function to change the state.<br>
+```js
+const setState = Element.$state('stateName', stateValue)
+```
+
+**Define states right after the element is first rendered.**<br>
+To use the state value, either refer to its name or use a built in function.
+```js
+const setCount = Button.$state('count', 0)
+Button.prop = { text: 'Clicked $-count times' } // $-count gets converted to the count value
+```
+You can now change the count each time the button is clicked
+```js
+Button.events = { click: () => setCount(Button.getState('count') + 1)
+```
+As `setCount` is called, the state changes and the element automatically re-renders and `$-count` to updates.<br>
+**Do not forget to re-render the element after all**
+```js
+Button.render('re')
+```
+### Pass the states to other elements
+
+You can pass `states` of an element to others (parents or children or partners, doesn't matter) by making them `pseudo-children` of the main element.<br>
+```js
+const Div = new Spuck({ type: 'div', parent: '#app' }).render();
+Button.init.pseudoChildren = [Div] // set it as a pseudo child and then make sure to re render the Button
+Button.render('re')
+```
+Now you can refer to the states of the Button easily inside the `Div`.<br>
+`states` of the **Button** are defined as `pseudo-states` of the **Div** (pseudo-child)
+```js
+Div.prop = { text: 'Button is clicked: $$-count times' } // by using $$-
+console.log(Div.pseudoState('count')) // same as .getState() but for pseudo-states
+Div.make('re')
+```
+
+## $effect
+You can run a function (effect) when some kind of values (dependencies) change on render.<br>
+At this point of time, dependencies can only be states or pseudo-states.<br>
+```js
+Button.$effect(() => { 
+	// this function will run first time and on every other render in which the dependencies will change
+	console.log(`Button is clicked: ${Button.getState('count')} times`)
+}, ['$-count']) // when count will change, the text will be console logged
+```
+An element can't have states of others as it's dependencies, until it is a pseudoChild of some other.<br>
+`Div` is a pseudo-child of `Button`, this implies
+```js
+Div.$effect(() => {
+	console.log('Div effected by Button')
+}, ['$$-count'])
+
+Div.render('re')
+```
+
+### Together it looks like
+```js
+const Button = new Spuck({ type: 'button', parent: '#app', class: 'class1 class2', id: 'something' }).render();
+
+const setCount = Button.$state('count', 0)
+Button.prop = { text: 'Clicked: $-count times', css: { cursor: 'pointer' } }
+Button.events = { click: () => setCount(Button.getState('count') + 1) }
+
+Button.$effect(() => {
+    console.log(`Button is clicked: ${Button.getState('count')} times`)
+}, ['$-count'])
+Button.make('re')
+
+const Div = new Spuck({ type: 'div', parent: '#app' }).render()
+
+Button.init.pseudoChildren = [Div]
+Button.render('re')
+
+Div.prop = { text: 'Button is clicked $$-count times' }
+Div.$effect(() => {
+    console.log('Div effected by Button')
+}, ['$$-count'])
+Div.make('re')
+```
+
+![state](https://user-images.githubusercontent.com/70335252/166448233-4ef6765d-1fda-45ca-9f7a-44e702793f10.gif)
+
+# EXAMPLES
 ### index.html
 ```html
 <head>
