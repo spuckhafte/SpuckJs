@@ -34,14 +34,14 @@ const Button = new Spuck()
 You render an element manually when you when you define a bunch of properties and then wanna add it to the element.<br>
 It requires a `query` as parameter to be `'re'` when you are rendering it second or more times, `render('re')`.<br>
 When `query = 're'`, the element just gets updated with new properties, otherwise a new one is created.<br>
-It's great if you ***render*** the element while it's created, cause `effect` and `state` can only be used in a *rendered* element
+Its great if you ***render*** the element while its created, cause `effect` and `state` can only be used in a *rendered* element
 ```js
 const Button = new Spuck({ type: 'button', parent: '#app', class: 'class1 class2', id: 'something' }).render();
 // intializing it that way is quite handy, you can also do it in a separate line: "Button.init = {...}"
 Button.prop = { text: 'lorem', css: { cursor: 'pointer', marginInline: '2px' } }
 Button.attr = {...} ; Button.events = { click: someFunc, mouseover: () => func(param) }
 ```
-After defining some properties, you re-render (as it's already rendered) it
+After defining some properties, you re-render it (as its already rendered)
 ```js
 Button.render('re')
 ```
@@ -52,16 +52,16 @@ Button.mount() // put's it in the DOM
 // or use
 Button.make('re') // combines render() and mount(), passes the parameter to render()
 ```
-**You can use `render` even after the using `make` (putting it to DOM), it will update the mounted element at any point of time**
+**You can use `render` even if an element is in the DOM, it will update the mounted element at any point in time**
 
 # State and Effect Management
 
 ## $state()
-Define a state with `$state` function and use it by referring to it's name in strings or using `getState` function.
+Define a state with `$state` function and use it by referring to its name in strings or using `getState` function.
 
 `getState()` will not change the value when state is changed, it will store a static value, it can change when the whole code re-runs, *for eg.* when it is used in a **loop** or bind to an event.<br>
 
-Unlike `getState`, reffering state using its name in strings (`'$-state'`) changes it's value when the state changes.<br>
+Unlike `getState`, refering state using its name in strings (`'$-state'`) changes its value when the state changes.<br>
 
 `$state` returns a function to change the state.<br>
 ```js
@@ -101,14 +101,14 @@ Div.make('re')
 
 ## $effect
 You can run a function (effect) when some kind of values (dependencies) change on render.<br>
-At this point of time, dependencies can only be states or pseudo-states.<br>
+At this point in time, dependencies can only be states or pseudo-states.<br>
 ```js
 Button.$effect(() => { 
 	// this function will run first time and on every other render in which the dependencies will change
 	console.log(`Button is clicked: ${Button.getState('count')} times`)
 }, ['$-count']) // when count will change, the text will be console logged
 ```
-An element can't have states of others as it's dependencies, until it is a pseudoChild of some other.<br>
+An element can't have states of others as its dependencies, until it is a pseudoChild of some other.<br>
 `Div` is a pseudo-child of `Button`, this implies
 ```js
 Div.$effect(() => {
@@ -142,8 +142,9 @@ Div.$effect(() => {
 }, ['$$-count'])
 Div.make('re')
 ```
+![effect](https://user-images.githubusercontent.com/70335252/166469862-ade0cb5f-76e3-4e48-b465-6b7bb9a9ca14.gif)
 
-![state](https://user-images.githubusercontent.com/70335252/166448233-4ef6765d-1fda-45ca-9f7a-44e702793f10.gif)
+
 
 # EXAMPLES
 ### index.html
@@ -215,8 +216,8 @@ NameDisplay.make('re');
 ```
 
 ### Result:
+![form-state](https://user-images.githubusercontent.com/70335252/166470675-d687a040-ba2e-4014-9e0c-7bd402dc2f3a.gif)
 
-https://user-images.githubusercontent.com/70335252/164968898-17029eb5-cca6-4769-ace1-b67455bc495a.mp4
 
 # Comparison 1:
 **SpuckJs - state managed**
@@ -289,8 +290,7 @@ Parent.addEventListener('click', () => {
 document.querySelector('#app').appendChild(Parent)
 children.forEach(el => document.querySelector('#app').appendChild(el))
 ```
+![state](https://user-images.githubusercontent.com/70335252/166469804-23563fa7-e46a-4d9a-a154-07d3d35bcc0a.gif)
 
-**When first block is clicked, all the blocks change their color**<br/>
-<img width="46" alt="Screenshot 2022-05-02 094632" src="https://user-images.githubusercontent.com/70335252/166183626-e4e437e4-2192-42d5-9bfa-8cdf664e8632.png">
 
 
