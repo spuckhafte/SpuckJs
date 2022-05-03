@@ -13,7 +13,7 @@ You can pass `states` of an element to others (parents or children or partners, 
 ### index.html
 ```html
 <head>
-  <script src='spuck.js'></script>
+  <script src='https://cdn.jsdelivr.net/gh/spuckhafte/SpuckJs@0.1.0/Spuck.js'></script>
   <script src='index.js' defer></script>
 </head>
 <body>
