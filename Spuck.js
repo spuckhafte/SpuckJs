@@ -115,6 +115,12 @@ class Spuck {
         parent.removeChild(this.el);
     }
 
+    isMount(id) { // checks if the element is mounted or not
+        let parent = document.querySelector(this.init.parent);
+        let el = parent.querySelector(id);
+        return el !== null;
+    }
+
     make(query) { // combines render and mount
         this.render(query);
         this.mount();
@@ -181,4 +187,15 @@ class Spuck {
         _deps.forEach(_dep => this.#_deps[_dep] = [this.formatString(_dep), true])
         this.#_effects[effectIndex] = [_func, _deps]
     }
+}
+
+function _isDescendant(parent, child) {
+    var node = child.parentNode;
+    while (node != null) {
+        if (node == parent) {
+            return true;
+        }
+        node = node.parentNode;
+    }
+    return false;
 }
