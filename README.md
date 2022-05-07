@@ -11,7 +11,7 @@ Each object of class `Spuck` is a Virtual element which you can put in the DOM.<
 
 ## Link:
 ```html
-<script src='https://cdn.jsdelivr.net/gh/spuckhafte/SpuckJs@0.1.1/Spuck.js'></script>
+<script src='https://cdn.jsdelivr.net/gh/spuckhafte/SpuckJs@0.1.2/Spuck.js'></script>
 ```
 
 ## new Spuck()
@@ -150,7 +150,7 @@ Div.make('re')
 ### index.html
 ```html
 <head>
-  <script src='https://cdn.jsdelivr.net/gh/spuckhafte/SpuckJs@0.1.1/Spuck.js'></script>
+  <script src='https://cdn.jsdelivr.net/gh/spuckhafte/SpuckJs@0.1.2/Spuck.js'></script>
   <script src='index.js' defer></script>
 </head>
 <body>
