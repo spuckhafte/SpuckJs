@@ -22,11 +22,11 @@ Then define its `properties`, like **text** and **css**, bind `events` to it and
 const Button = new Spuck()
 // constructor Spuck(init: {}, prop: {}, events: {}, attr: {}): Spuck
 
-/*	others:
-	* this._state = {}; // { stateName: [stateValue, changeStateFunction] }
-	* this._pseudoState = {}; // { stateName: [stateValue, changeStateFunction] }
-	* this.#_effects = {}; // { 1: [effectFunc, [dep]] }
-	* this.#_deps = {}; // { '$-state': [value, firstTimeOrNot] }
+/*  others:
+    * this._state = {}; // { stateName: [stateValue, changeStateFunction] }
+    * this._pseudoState = {}; // { stateName: [stateValue, changeStateFunction] }
+    * this.#_effects = {}; // { 1: [effectFunc, [dep]] }
+    * this.#_deps = {}; // { '$-state': [value, firstTimeOrNot] }
 */, these are managed by the library
 ```
 
