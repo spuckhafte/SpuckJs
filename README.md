@@ -9,6 +9,11 @@
 `SpuckJs` is a Js library which converts pure Js Objects into DOM elements.<br/> 
 Each object of class `Spuck` is a Virtual element which you can put in the DOM.<br/><br/> 
 
+## NPX tool:
+**Creates a SpuckJs template app:**
+```js
+npx create-spuck-temp
+```
 ## Link:
 ```html
 <script src='https://cdn.jsdelivr.net/gh/spuckhafte/SpuckJs@0.1.2/Spuck.js'></script>
@@ -22,11 +27,11 @@ Then define its `properties`, like **text** and **css**, bind `events` to it and
 const Button = new Spuck()
 // constructor Spuck(init: {}, prop: {}, events: {}, attr: {}): Spuck
 
-/*	others:
-	* this._state = {}; // { stateName: [stateValue, changeStateFunction] }
-	* this._pseudoState = {}; // { stateName: [stateValue, changeStateFunction] }
-	* this.#_effects = {}; // { 1: [effectFunc, [dep]] }
-	* this.#_deps = {}; // { '$-state': [value, firstTimeOrNot] }
+/*  others:
+    * this._state = {}; // { stateName: [stateValue, changeStateFunction] }
+    * this._pseudoState = {}; // { stateName: [stateValue, changeStateFunction] }
+    * this.#_effects = {}; // { 1: [effectFunc, [dep]] }
+    * this.#_deps = {}; // { '$-state': [value, firstTimeOrNot] }
 */, these are managed by the library
 ```
 
