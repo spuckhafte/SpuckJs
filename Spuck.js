@@ -1,3 +1,8 @@
+/*
+    Copyright (c) 2022, Spuck.js, Rakshit
+    All rights reserved.
+*/
+
 class Spuck {
     constructor(init, prop, events, attr) {
         this.init = init; // {} type:_, parent:_, pseudoChildren[], class[], id:_
@@ -8,6 +13,7 @@ class Spuck {
         this._pseudoState = {}; // { stateName: [stateValue, changeStateFunction] }
         this.#_effects = {}; // { 1: [effectFunc, [dep]] }
         this.#_deps = {}; // { '$-state': [value, firstTimeOrNot] }
+        this.#_partialEffects = {}; // { 1: [effectFunc, type] } // type: 'f' or 'e' (first time or everytime)
     }
 
     #_SP = '$-' // state prefix
@@ -17,6 +23,7 @@ class Spuck {
     _pseudoState // states of the pseudo-parent elements (pseudo states), if any
     #_effects // functions that run when change occurs in some state
     #_deps // all the states that are triggering some effects
+    #_partialEffects // functions that run first time or everytime
 
     render(query) { // creates or updates an element
         // query -> argument to trigger re-rendering, if need, it just updates the properties of the existing element
@@ -24,7 +31,9 @@ class Spuck {
         const el = query === 're' ? this.el : document.createElement(this.init.type); // grab the HTML element 
         this.el = el;
 
-        this.el.className = '';
+        // set element class
+        this.el.className = ''; // empty it first
+        // add classes, either hardcoded or from state/pseudo-state names
         this.init.class && this.init.class.split(' ').forEach(_cl => {
             if (this.check(_cl)) {
                 if (_cl.startsWith(this.#_SP)) {
@@ -80,6 +89,18 @@ class Spuck {
         }
 
 
+        // partial effects
+        if (Object.keys(this.#_partialEffects).length > 0) {
+            for (let key of Object.keys(this.#_partialEffects)) {
+                if (this.#_partialEffects[key][1] === 'f') {
+
+                    this.#_partialEffects[key][0]();
+                    delete this.#_partialEffects[key];
+
+                } else this.#_partialEffects[key][0]();
+            }
+        }
+
         if (Object.keys(this.#_deps).length > 0) { // run effect functions if dependencies change
             let dependencies = Object.keys(this.#_deps);
             let alteredDeps = []
@@ -101,7 +122,6 @@ class Spuck {
                 }
             })
         }
-
         return this
     }
 
@@ -144,7 +164,11 @@ class Spuck {
     }
 
     #_alterState(_finVal, _name) { // changes the state value and resp. makes changes in element
-        this._state[_name][0] = _finVal;
+        if (typeof _finVal === 'function') {
+            let _actualFinVal = _finVal(this.getState(_name));
+            this._state[_name][0] = _actualFinVal;
+        } else this._state[_name][0] = _finVal;
+
         this.render('re'); // reRender the element
         // reRender all the children
         if (this.init.pseudoChildren) this.init.pseudoChildren.forEach(child => child.render('re'));
@@ -184,18 +208,14 @@ class Spuck {
 
     $effect(_func, _deps) { // run an effect (function) when one of the dependency (state) change
         let effectIndex = Object.keys(this.#_effects).length + 1;
-        _deps.forEach(_dep => this.#_deps[_dep] = [this.formatString(_dep), true])
+        _deps.forEach(_dep => {
+
+            // partial effects
+            if (_dep === 'f' || _dep === 'e') this.#_partialEffects[Object.keys(this.#_partialEffects).length] = [_func, _dep];
+
+            // effects
+            else this.#_deps[_dep] = [this.formatString(_dep), true]
+        })
         this.#_effects[effectIndex] = [_func, _deps]
     }
-}
-
-function _isDescendant(parent, child) {
-    var node = child.parentNode;
-    while (node != null) {
-        if (node == parent) {
-            return true;
-        }
-        node = node.parentNode;
-    }
-    return false;
 }
