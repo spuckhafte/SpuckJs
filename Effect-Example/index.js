@@ -15,7 +15,7 @@ const setCount1 = Button1.$state('count1', 0); // set state of the first button
 Button1.render('re');
 
 Button1.prop = { text: 'Clicked: $-count1 times' }; // refer to the state of the first button using "$-" in a string
-Button1.events = { click: () => setCount1(Button1.getState('count1') + 1) }; // change the state of the first button when it is clicked
+Button1.events = { click: () => setCount1(count => count + 1) }; // change the state of the first button when it is clicked
 
 Button1.$effect(() => { // effect function for the first button
     console.log('Button1 count is: ' + Button1.getState('count1'));
@@ -33,7 +33,7 @@ const setCount2 = Button2.$state('count2', 0);
 Button2.render('re');
 
 Button2.prop = { text: 'Clicked: $-count2 times' };
-Button2.events = { click: () => setCount2(Button2.getState('count2') + 1) };
+Button2.events = { click: () => setCount2(count => count + 1) };
 
 Button2.$effect(() => {
     console.log('Button2 count is: ' + Button2.getState('count2'));
