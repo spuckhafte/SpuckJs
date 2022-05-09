@@ -73,6 +73,13 @@ Unlike `getState`, refering state using its name in strings (`'$-state'`) change
 const setState = Element.$state('stateName', stateValue)
 ```
 
+### Change ---
+`setState` accepts a `function` as an *argument* and contains **current state value** as parameter<br>
+```js
+setState(prevState => prevState + 1)
+```
+### --- end
+
 **Define states right after the element is first rendered.**<br>
 To use the state value, either refer to its name or use a built in function.
 ```js
@@ -107,6 +114,12 @@ Div.make('re')
 ## $effect
 You can run a function (effect) when some kind of values (dependencies) change on render.<br>
 At this point in time, dependencies can only be states or pseudo-states.<br>
+
+### Change ---
+Dependencies can also be `['f']` and `['e']`<br>
+These are **partial dependencies** => <br> `['f']` effect will run first time only <br> `['e']` effect will run everytime the element is rendered
+### --- end
+
 ```js
 Button.$effect(() => { 
 	// this function will run first time and on every other render in which the dependencies will change
