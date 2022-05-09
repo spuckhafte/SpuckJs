@@ -88,7 +88,7 @@ Button.prop = { text: 'Clicked $-count times' } // $-count gets converted to the
 ```
 You can now change the count each time the button is clicked
 ```js
-Button.events = { click: () => setCount(Button.getState('count') + 1)
+Button.events = { click: () => setCount(prevCount => prevCount + 1)
 ```
 As `setCount` is called, the state changes and the element automatically re-renders and `$-count` to updates.<br>
 **Do not forget to re-render the element after all**
@@ -142,7 +142,7 @@ const Button = new Spuck({ type: 'button', parent: '#app', class: 'class1 class2
 
 const setCount = Button.$state('count', 0)
 Button.prop = { text: 'Clicked: $-count times', css: { cursor: 'pointer' } }
-Button.events = { click: () => setCount(Button.getState('count') + 1) }
+Button.events = { click: () => setCount(prevCount => prevCount + 1) }
 
 Button.$effect(() => {
     console.log(`Button is clicked: ${Button.getState('count')} times`)
@@ -229,7 +229,7 @@ NameDisplay.prop = {
 	text: '$$-value', // use the "value" state of NameInp (pseudo-parent)
 	css: { cursor: 'pointer', color: '$-color', width: 'fit-content' } 
 }
-NameDisplay.events = { click: () => setColor(NameDisplay.getState('color') === 'red' ? 'blue' : 'red') }
+NameDisplay.events = { click: () => setColor(color => color === 'red' ? 'blue' : 'red') }
 NameDisplay.make('re');
 ```
 
@@ -250,7 +250,7 @@ Input.init.pseudoChildren = [Display];
 Input.render('re');
 const setColor = Display.$state('color', 'red');
 Display.prop = { text: '$$-value', css: { color: '$-color', cursor: 'pointer', userSelect: 'none' } };
-Display.events = { click: () => setColor(Display.getState('color') === 'blue' ? 'red' : 'blue') };
+Display.events = { click: () => setColor(color => color === 'blue' ? 'red' : 'blue') };
 Display.make('re');
 ```
 **SpuckJs - no state**
