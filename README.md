@@ -76,6 +76,12 @@ const setState = Element.$state('stateName', stateValue)
 ### Change ---
 `setState` accepts a `function` as an *argument* and contains **current state value** as parameter<br>
 ```js
+setState(function(prevState) {
+    return prevState + 1;
+});
+```
+**using arrow syntax is preferred:**
+```js
 setState(prevState => prevState + 1)
 ```
 ### --- end
@@ -118,19 +124,25 @@ At this point in time, dependencies can only be states or pseudo-states.<br>
 ### Change ---
 Dependencies can also be `['f']` and `['e']`<br>
 These are **partial dependencies** => <br> `['f']` effect will run first time only <br> `['e']` effect will run everytime the element is rendered
+```js
+Element.$effect(() => {
+    console.log('hi')
+}, ['f'] "or" ['e'])
+```
+**Note:** When an element renders, its pseudo-children too get rendered. <br>Therefore, `['e']` based effect(s) of a pseudo-child will run even if its parent(s) renders.
 ### --- end
 
 ```js
 Button.$effect(() => { 
-	// this function will run first time and on every other render in which the dependencies will change
-	console.log(`Button is clicked: ${Button.getState('count')} times`)
+    // this function will run first time and on every other render in which the dependencies will change
+    console.log(`Button is clicked: ${Button.getState('count')} times`)
 }, ['$-count']) // when count will change, the text will be console logged
 ```
 An element can't have states of others as its dependencies, until it is a pseudoChild of some other.<br>
 `Div` is a pseudo-child of `Button`, this implies
 ```js
 Div.$effect(() => {
-	console.log('Div effected by Button')
+    console.log('Div effected by Button')
 }, ['$$-count'])
 
 Div.render('re')
@@ -217,17 +229,17 @@ NameDisplay.render();
 
 NameInput.init.pseudoChildren = [NameDisplay] 
 /* 
-	set NameDis as pseudoChild of NameInp to pass down state of the Parent (input el)
-	to its children (only NameDisplay in this case). Now NameDisplay can access these
-	states as pseudo-states by using $$- as prefix, eg. $$-someStateOfParent.
+    set NameDis as pseudoChild of NameInp to pass down state of the Parent (input el)
+    to its children (only NameDisplay in this case). Now NameDisplay can access these
+    states as pseudo-states by using $$- as prefix, eg. $$-someStateOfParent.
 */
 NameInput.render('re');
 
 const setColor = NameDisplay.$state('color', 'red'); // this state will manage the color of the text
 
 NameDisplay.prop = { 
-	text: '$$-value', // use the "value" state of NameInp (pseudo-parent)
-	css: { cursor: 'pointer', color: '$-color', width: 'fit-content' } 
+    text: '$$-value', // use the "value" state of NameInp (pseudo-parent)
+    css: { cursor: 'pointer', color: '$-color', width: 'fit-content' } 
 }
 NameDisplay.events = { click: () => setColor(color => color === 'red' ? 'blue' : 'red') }
 NameDisplay.make('re');
@@ -285,11 +297,11 @@ Parent.prop = { css: { width: '50px', height:'50px', background: '$-color', curs
 Parent.events = { click: () => setBg('#'+Math.floor(Math.random()*16777215).toString(16)) };
 Parent.make('re');
 for (i=1; i <= 3; i++) {
-	const Child = new Spuck({ type: 'div', parent: '#app', id: `${i}` }).render();
-	Parent.init.pseudoChildren = Parent.init.pseudoChildren ? [...Parent.init.pseudoChildren, Child] : [Child];
-	Parent.render('re');
-	Child.prop = { css: { width: '50px', height: '50px', background: '$$-color', marginBlock: '2px' } };
-	Child.make('re')
+    const Child = new Spuck({ type: 'div', parent: '#app', id: `${i}` }).render();
+    Parent.init.pseudoChildren = Parent.init.pseudoChildren ? [...Parent.init.pseudoChildren, Child] : [Child];
+    Parent.render('re');
+    Child.prop = { css: { width: '50px', height: '50px', background: '$$-color', marginBlock: '2px' } };
+    Child.make('re')
 }
 ```
 **VanillaJs - no state**
@@ -298,14 +310,14 @@ let Parent = document.createElement('div');
 Object.assign(Parent.style, { width: '50px',height: '50px',background: 'red',cursor: 'pointer',marginBlock: '2em' });
 let children = [];
 for (i=1; i<=3; i++) {
-	let Child = document.createElement('div')
-	Object.assign(Child.style, { width: '50px', height: '50px', background: 'red', marginBlock: '2px' })
-	children.push(Child)
+    let Child = document.createElement('div')
+    Object.assign(Child.style, { width: '50px', height: '50px', background: 'red', marginBlock: '2px' })
+    children.push(Child)
 }
 Parent.addEventListener('click', () => {
-	let color = '#'+Math.floor(Math.random()*16777215).toString(16)
-	Object.assign(Parent.style, { background: color })
-	children.forEach(child => child.style.background = color);
+    let color = '#'+Math.floor(Math.random()*16777215).toString(16)
+    Object.assign(Parent.style, { background: color })
+    children.forEach(child => child.style.background = color);
 })
 document.querySelector('#app').appendChild(Parent)
 children.forEach(el => document.querySelector('#app').appendChild(el))
