@@ -2,12 +2,10 @@
 
 
 # SpuckJs
-**Javscript Library**<br/>
-
-# DOCUMENTATION
 `SpuckJs` is a Js library which converts pure Js Objects into DOM elements.<br/> 
 Each object of class `Spuck` is a Virtual element which you can put in the DOM.<br/><br/> 
 
+# DOCUMENTATION
 ## NPX tool:
 **Creates a SpuckJs template app:**
 ```js
