@@ -3,7 +3,6 @@
 
 # SpuckJs
 **Javscript Library**<br/>
-*Under Development*
 
 # DOCUMENTATION
 `SpuckJs` is a Js library which converts pure Js Objects into DOM elements.<br/> 
