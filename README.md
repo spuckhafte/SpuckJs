@@ -13,7 +13,7 @@ npx create-spuck-temp
 ```
 ## Link:
 ```html
-<script src='https://cdn.jsdelivr.net/gh/spuckhafte/SpuckJs@1.0.0/Spuck.js'></script>
+<script src='https://cdn.jsdelivr.net/gh/spuckhafte/SpuckJs@1.0.1/Spuck.js'></script>
 ```
 
 ## new Spuck()
