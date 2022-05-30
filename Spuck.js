@@ -35,7 +35,7 @@ class Spuck {
         this.el.className = ''; // empty it first
         // add classes, either hardcoded or from state/pseudo-state names
         this.init.class && this.init.class.split(' ').forEach(_cl => {
-            if (this.check(_cl)) {
+            if (this._check(_cl)) {
                 if (_cl.startsWith(this.#_SP)) {
                     let _stateName = this.#_getStateName(_cl);
                     if (this.getState(_stateName) !== '') el.classList.add(this.getState(_stateName));
@@ -45,10 +45,10 @@ class Spuck {
                 }
             } else el.classList.add(_cl);
         })
-        this.init.id && !this.check(this.init.id) && el.setAttribute('id', this.init.id); // add id
+        this.init.id && !this._check(this.init.id) && el.setAttribute('id', this.init.id); // add id
 
         // add id if it's set as some state's name by extracting it
-        if (this.init.id && this.check(this.init.id)) el.setAttribute('id', this.formatString(this.init.id));
+        if (this.init.id && this._check(this.init.id)) el.setAttribute('id', this._formatString(this.init.id));
 
         // set pseudo-states of the pesudo-children if any 
         this.init.pseudoChildren && this.init.pseudoChildren.forEach(child => {
@@ -58,25 +58,25 @@ class Spuck {
         // set attributes, either hard-coded or state-managed 
         if (this.attr && Object.keys(this.attr).length > 0) {
             for (let key in this.attr) {
-                if (!this.check(this.attr[key])) el.setAttribute(key, this.attr[key]);
-                else el.setAttribute(key, this.formatString(this.attr[key]));
+                if (!this._check(this.attr[key])) el.setAttribute(key, this.attr[key]);
+                else el.setAttribute(key, this._formatString(this.attr[key]));
             }
         }
 
         // set properties (hard-coded or state-managed)
         if (this.prop) {
             if (this.prop.text) {
-                if (!this.check(this.prop.text)) el.innerHTML = this.prop.text;
-                else el.innerHTML = this.formatString(this.prop.text);
+                if (!this._check(this.prop.text)) el.innerHTML = this.prop.text;
+                else el.innerHTML = this._formatString(this.prop.text);
             }
             if (this.prop.value) {
-                if (!this.check(this.prop.value)) el.value = this.prop.value;
-                else el.value = this.formatString(this.prop.value);
+                if (!this._check(this.prop.value)) el.value = this.prop.value;
+                else el.value = this._formatString(this.prop.value);
             }
             if (this.prop.css) {
                 for (let style of Object.keys(this.prop.css)) {
-                    if (!this.check(this.prop.css[style])) el.style[style] = this.prop.css[style];
-                    else el.style[style] = this.formatString(this.prop.css[style]);
+                    if (!this._check(this.prop.css[style])) el.style[style] = this.prop.css[style];
+                    else el.style[style] = this._formatString(this.prop.css[style]);
                 }
             }
         }
@@ -105,9 +105,9 @@ class Spuck {
             let dependencies = Object.keys(this.#_deps);
             let alteredDeps = []
             dependencies.forEach(depend => {
-                if (this.#_deps[depend][0] !== this.changeVal(depend) || this.#_deps[depend][1]) {
+                if (this.#_deps[depend][0] !== this._changeVal(depend) || this.#_deps[depend][1]) {
                     if (this.#_deps[depend][1]) this.#_deps[depend][1] = false;
-                    else this.#_deps[depend][0] = this.changeVal(depend);
+                    else this.#_deps[depend][0] = this._changeVal(depend);
                     alteredDeps.push(depend)
                 }
             })
@@ -135,21 +135,22 @@ class Spuck {
         parent.removeChild(this.el);
     }
 
-    isMount(id) { // checks if the element is mounted or not
+    isMount() { // _checks if the element is mounted or not
         let parent = document.querySelector(this.init.parent);
-        let el = parent.querySelector(id);
-        return el !== null;
+        let el = parent.querySelector(`#${this.init.id}`);
+        return !!el;
     }
 
     make(query) { // combines render and mount
-        this.render(query);
+        let el = this.render(query);
         this.mount();
+        return el
     }
 
-    $state(_name, _val) { // sets element's state
+    $state(_name, _val, _autoRender=true) { // sets element's state
         let _theStateArray = [
             _val,
-            _newVal => this.#_alterState(_newVal, _name)
+            _newVal => this.#_alterState(_newVal, _autoRender, _name)
         ];
         this._state[_name] = _theStateArray;
         return _theStateArray[1]; // returns a function to change the state
@@ -163,15 +164,15 @@ class Spuck {
         return this._pseudoState[_name][0]
     }
 
-    #_alterState(_finVal, _name) { // changes the state value and resp. makes changes in element
+    #_alterState(_finVal, _autoRender, _name) { // changes the state value and resp. makes changes in element
         if (typeof _finVal === 'function') {
             let _actualFinVal = _finVal(this.getState(_name));
             this._state[_name][0] = _actualFinVal;
         } else this._state[_name][0] = _finVal;
 
-        this.render('re'); // reRender the element
+        if (_autoRender) this.render('re'); // reRender the element
         // reRender all the children
-        if (this.init.pseudoChildren) this.init.pseudoChildren.forEach(child => child.render('re'));
+        if (_autoRender) if (this.init.pseudoChildren) this.init.pseudoChildren.forEach(child => child.render('re'));
         return _finVal;
     }
 
@@ -180,7 +181,7 @@ class Spuck {
         return _stateName;
     }
 
-    changeVal(val) { // converts prefixed state name or "pseudo-state name" to the state value
+    _changeVal(val) { // converts prefixed state name or "pseudo-state name" to the state value
         if (val.startsWith(this.#_SP)) {
             let _stateName = this.#_getStateName(val);
             if (this._state[_stateName]) return this.getState(_stateName);
@@ -194,15 +195,15 @@ class Spuck {
 
     }
 
-    formatString(text) { // formats a string, converting any $-state to its value
+    _formatString(text) { // formats a string, converting any $-state to its value
         if (!text.includes(this.#_SP) && !text.includes(this.#_CSP)) return text;
         let formatted = ''
-        if (text.split(' ').length === 1) return this.changeVal(text)
-        text.split(' ').forEach(tx => formatted += this.check(tx) ? `${this.changeVal(tx)} ` : `${tx} `)
+        if (text.split(' ').length === 1) return this._changeVal(text)
+        text.split(' ').forEach(tx => formatted += this._check(tx) ? `${this._changeVal(tx)} ` : `${tx} `)
         return formatted
     }
 
-    check(query) { // checks if query is a prefixed state name
+    _check(query) { // _checks if query is a prefixed state name
         return query.toString().includes(this.#_SP) || query.toString().includes(this.#_CSP)
     }
 
@@ -214,7 +215,7 @@ class Spuck {
             if (_dep === 'f' || _dep === 'e') this.#_partialEffects[Object.keys(this.#_partialEffects).length] = [_func, _dep];
 
             // effects
-            else this.#_deps[_dep] = [this.formatString(_dep), true]
+            else this.#_deps[_dep] = [this._formatString(_dep), true]
         })
         this.#_effects[effectIndex] = [_func, _deps]
     }
