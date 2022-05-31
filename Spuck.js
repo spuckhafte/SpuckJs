@@ -14,6 +14,8 @@ class Spuck {
         this.#_effects = {}; // { 1: [effectFunc, [dep]] }
         this.#_deps = {}; // { '$-state': [value, firstTimeOrNot] }
         this.#_partialEffects = {}; // { 1: [effectFunc, type] } // type: 'f' or 'e' (first time or everytime)
+        this.#_renderCondition; // function
+        this.#_directMount; // function
     }
 
     #_SP = '$-' // state prefix
@@ -24,7 +26,8 @@ class Spuck {
     #_effects // functions that run when change occurs in some state
     #_deps // all the states that are triggering some effects
     #_partialEffects // functions that run first time or everytime
-
+    #_renderCondition // function that returns true or false, condition for rendering the element
+ 
     render(query) { // creates or updates an element
         // query -> argument to trigger re-rendering, if need, it just updates the properties of the existing element
 
@@ -89,6 +92,16 @@ class Spuck {
         }
 
 
+        if (query === 're') {
+            if (typeof this.#_renderCondition === 'function') {
+                if (!this.#_renderCondition()) {
+                    if (this.isMount()) this.unMount();
+                    return this;
+                } else if (!this.isMount()) this.#_directMount();
+            }
+        }
+
+
         // partial effects
         if (Object.keys(this.#_partialEffects).length > 0) {
             for (let key of Object.keys(this.#_partialEffects)) {
@@ -125,7 +138,19 @@ class Spuck {
         return this
     }
 
+    renderIf(condition) {
+        this.#_renderCondition = condition;
+        return this.render();
+    }
+
     mount() { // put the element in dom
+        if (typeof this.#_renderCondition === 'function') {
+            if (this.#_renderCondition()) this.#_directMount()
+            else if (this.isMount()) this.unMount();
+        } else this.#_directMount();
+    }
+
+    #_directMount() { // put in dom without checking the condition
         let parent = document.querySelector(this.init.parent);
         parent.appendChild(this.el);
     }
@@ -147,7 +172,7 @@ class Spuck {
         return el
     }
 
-    $state(_name, _val, _autoRender=true) { // sets element's state
+    $state(_name, _val, _autoRender = true) { // sets element's state
         let _theStateArray = [
             _val,
             _newVal => this.#_alterState(_newVal, _autoRender, _name)
