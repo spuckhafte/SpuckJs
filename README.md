@@ -9,7 +9,7 @@ Each object of class `Spuck` is a Virtual element which you can put in the DOM.<
 # NEW DETAILED DOCUMENTATION
 **https://spuckjs.netlify.app/**
 
-# EXAMPLE
+# EXAMPLES
 
 ## Example 1
 #### index.html
