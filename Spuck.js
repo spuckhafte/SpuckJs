@@ -27,7 +27,7 @@ class Spuck {
     #_deps // all the states that are triggering some effects
     #_partialEffects // functions that run first time or everytime
     #_renderCondition // function that returns true or false, condition for rendering the element
- 
+
     render(query) { // creates or updates an element
         // query -> argument to trigger re-rendering, if need, it just updates the properties of the existing element
 
@@ -106,10 +106,9 @@ class Spuck {
         if (Object.keys(this.#_partialEffects).length > 0) {
             for (let key of Object.keys(this.#_partialEffects)) {
                 if (this.#_partialEffects[key][1] === 'f') {
-
-                    this.#_partialEffects[key][0]();
+                    const _effectFunction = this.#_partialEffects[key][0];
                     delete this.#_partialEffects[key];
-
+                    _effectFunction();
                 } else this.#_partialEffects[key][0]();
             }
         }
