@@ -1,7 +1,7 @@
 <p align='center'><img width='400' height='300' src='https://user-images.githubusercontent.com/70335252/166430266-10f9f4af-4eed-4ee4-b5b5-7d0837492a0e.jpeg'></p>
 
 
-# SpuckJs
+# SPUCKJS
 `SpuckJs` is a Js library which converts pure Js Objects into DOM elements.<br/> 
 Each object of class `Spuck` is a Virtual element which you can put in the DOM.<br/><br/> 
 
@@ -9,7 +9,9 @@ Each object of class `Spuck` is a Virtual element which you can put in the DOM.<
 # NEW DETAILED DOCUMENTATION
 **https://spuckjs.netlify.app/**
 
-## EXAMPLES
+# EXAMPLES
+
+## Example 1
 #### index.html
 ```html
 <head>
@@ -82,13 +84,13 @@ NameDisplay.make('re');
 ![form-state](https://user-images.githubusercontent.com/70335252/166470675-d687a040-ba2e-4014-9e0c-7bd402dc2f3a.gif)
 
 
-## Comparison 1:
+## Example 2:
 **SpuckJs - state managed**
 ```js
 const Input = new Spuck({ type: 'input', parent: '#app' }).render();
 const setValue = Input.$state('value', '');
 Input.attr = { value: '$-value', autofocus: 'true' };
-Input.events = { keyup: e => setValue(e.target.value) };
+Input.events = { input: e => setValue(e.target.value) };
 Input.make('re');
 const Display = new Spuck({ type: 'h4', parent: '#app' }).render();
 Input.init.pseudoChildren = [Display];
@@ -103,25 +105,20 @@ Display.make('re');
 const Input = new Spuck({ type: 'input', parent: '#app' }, {}, {}, { autofocus: 'true' }).render();
 const Display = new Spuck({ type: 'h4', parent: '#app' }).render();
 Display.prop = { text: '', css: { color: 'red', userSelect: 'none' } }
-Display.events = { click: () => Display.prop.css.color = Display.prop.css.color === 'blue' ? 'red' : 'blue'; Display.render('re') };
-Input.events = { keyup: e => { Display.prop.text = e.target.value; Display.render('re') } };
+Display.events = { click: () => {
+   Display.prop.css.color = Display.prop.css.color === 'blue' ? 'red' : 'blue'; 
+   Display.render('re');
+}};
+Input.events = { input: e => {
+  Display.prop.text = e.target.value; 
+  Display.render('re') 
+}};
 [Input, Display].forEach(i => i.make('re'));
-```
-**VanillaJS - no state**
-```js
-const Input = document.createElement('input');
-const Display = document.createElement('h4');
-Input.setAttribute('autofocus', true);
-Input.addEventListener('keyup', e => Display.innerHTML = e.target.value);
-Object.assign(Display.style, { color: 'red', userSelect: 'none', cursor: 'pointer' });
-Display.addEventListener('click', () => Display.style.color = Display.style.color === 'blue' ? 'red': 'blue');
-document.querySelector('#app').appendChild(Input);
-document.querySelector('#app').appendChild(Display);
 ```
 ![comparison](https://user-images.githubusercontent.com/70335252/166475079-976f41c2-afba-4631-9e0c-1212b334e791.gif)
 
 
-## Comparison 2:
+## Example 3:
 **SpuckJs - state managed**
 ```js
 const Parent = new Spuck({ type: 'div', parent: '#app' }).render();
