@@ -152,14 +152,11 @@ class Spuck {
 
             delete _pseudoIterativeElement._pseudoState;
 
-            if (iter == this.init.iterate.length - 1) delete _pseudoIterativeElement._state[iterativeStateName];
-
             _pseudoIterativeElement._pseudoState = {};
-
             _pseudoIterativeElement._pseudoState[iterativeStateName] = [_iterate];
-
-
             _pseudoIterativeElement.make();
+
+            if (iter == this.init.iterate.length - 1) delete _pseudoIterativeElement._state[iterativeStateName];
         }
     }
 
