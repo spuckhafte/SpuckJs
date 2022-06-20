@@ -5,17 +5,17 @@
 
 class Spuck {
     constructor(init, prop, events, attr) {
-        this.init = init; // {} type:_, parent:_, pseudoChildren[], class[], id:_
+        this.init = init; // {} type:_, parent:_, pseudoChildren[], class[], id:_, iterate[]
         this.prop = prop; // {} text:_, value:_, css{}
-        this.events = events; // {} click:f, mouseover:f, etc.
+        this.events = events; // {} click:f(), mouseover:f(), etc.
         this.attr = attr; // {} value:_, placeholder:_, etc.
-        this._state = {}; // { stateName: [stateValue, changeStateFunction] }
-        this._pseudoState = {}; // { stateName: [stateValue, changeStateFunction] }
-        this.#_effects = {}; // { 1: [effectFunc, [dep]] }
-        this.#_deps = {}; // { '$-state': [value, firstTimeOrNot] }
-        this.#_partialEffects = {}; // { 1: [effectFunc, type] } // type: 'f' or 'e' (first time or everytime)
-        this.#_renderCondition; // function
-        this.#_directMount; // function
+        this._state = {}; // { stateName: [stateValue:_, changeStateFunction()] }
+        this._pseudoState = {}; // { stateName: [stateValue:_, changeStateFunction()] }
+        this.#_effects = {}; // { 1: [effectFunc(), [dep:_$]] }
+        this.#_deps = {}; // { '$-state': [value:_, firstTimeOrNot:?] }
+        this.#_partialEffects = {}; // { 1: [effectFunc(), type:_] } // type: 'f' or 'e' (first time or everytime)
+        this.#_renderCondition; // function()
+        this.#_directMount; // function()
     }
 
     #_SP = '$-' // state prefix
@@ -140,6 +140,27 @@ class Spuck {
     renderIf(condition) {
         this.#_renderCondition = condition;
         return this.render();
+    }
+
+    renderFor() {
+        for (let iter in this.init.iterate) {
+            let _iterate = this.init.iterate[iter];
+            
+            const iterativeStateName = Object.keys(this._state).find(state => state.startsWith(':'));
+            const _pseudoIterativeElement = new Spuck();
+            Object.assign(_pseudoIterativeElement, this);
+
+            delete _pseudoIterativeElement._pseudoState;
+
+            if (iter == this.init.iterate.length - 1) delete _pseudoIterativeElement._state[iterativeStateName];
+
+            _pseudoIterativeElement._pseudoState = {};
+
+            _pseudoIterativeElement._pseudoState[iterativeStateName] = [_iterate];
+
+
+            _pseudoIterativeElement.make();
+        }
     }
 
     mount() { // put the element in dom
