@@ -142,22 +142,47 @@ class Spuck {
         return this.render();
     }
 
-    renderFor() {
+    renderFor(states) {
+        const pseudoElements = []
         for (let iter in this.init.iterate) {
             let _iterate = this.init.iterate[iter];
-            
+
             const iterativeStateName = Object.keys(this._state).find(state => state.startsWith(':'));
+
             const _pseudoIterativeElement = new Spuck();
             Object.assign(_pseudoIterativeElement, this);
 
+            _pseudoIterativeElement.init.id = _iterate;
+
             delete _pseudoIterativeElement._pseudoState;
 
-            _pseudoIterativeElement._pseudoState = {};
+            _pseudoIterativeElement._pseudoState = {}
             _pseudoIterativeElement._pseudoState[iterativeStateName] = [_iterate];
-            _pseudoIterativeElement.make();
-
-            if (iter == this.init.iterate.length - 1) delete _pseudoIterativeElement._state[iterativeStateName];
+            pseudoElements.push(_pseudoIterativeElement.make());
         }
+        pseudoElements.forEach(el => {
+            if (states) {
+                const statesToWorkOn = Object.keys(states)
+                statesToWorkOn.forEach(__state => {
+                    const _stateInfoArr = states[__state]
+                    const setAState = el.$state(__state, _stateInfoArr.initial);
+                    if (_stateInfoArr.eventName) {
+                        el.events = { ...el.events };
+                        if (typeof _stateInfoArr.stateSet == 'function') {
+                            el.events[_stateInfoArr.eventName] = () => {
+                                setAState(_prevVal => _stateInfoArr.stateSet(_prevVal))
+                            }
+                        } else {
+                            el.events[_stateInfoArr.eventName] = () => {
+                                setAState(_stateInfoArr.stateSet)
+                            }
+                        }
+                    }
+                })
+            }
+            el.render('re')
+        })
+        return pseudoElements
     }
 
     mount() { // put the element in dom
