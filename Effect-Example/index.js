@@ -43,7 +43,7 @@ Button2.make('re');
 new Spuck({ type: 'br', parent: '#app' }).make();
 new Spuck({ type: 'br', parent: '#app' }).make();
 
-// Third Button
+// // Third Button
 const Button3 = new Spuck({ type: 'button', parent: '#app', id: '3' }).render();
 
 Button1.init.pseudoChildren = [Button3]; // set the third button as the pseudo-child of the first button to access its state
@@ -51,7 +51,7 @@ Button1.render('re');
 Button2.init.pseudoChildren = [Button3]; // set the third button as the pseudo-child of the second button to access its state too
 Button2.render('re');
 
-// refer to the pseudo-states (states of the first 2 buttons) of the third button by using "$$-" in a string
+// // refer to the pseudo-states (states of the first 2 buttons) of the third button by using "$$-" in a string
 Button3.prop = { text: 'Button1 count: $$-count1 ; Button2 count: $$-count2' };
 Button3.attr = { disabled: true };
 
