@@ -1,8 +1,3 @@
-/*
-    Copyright (c) 2022, Spuck.js, Rakshit
-    All rights reserved.
-*/
-
 class Spuck {
     constructor(init, prop, events, attr) {
         this.init = init; // {} type:_, parent:_, pseudoChildren[], class[], id:_, iterate[]
@@ -152,13 +147,14 @@ class Spuck {
             const _pseudoIterativeElement = new Spuck();
             Object.assign(_pseudoIterativeElement, this);
 
-            _pseudoIterativeElement.init.id = _iterate;
+            _pseudoIterativeElement.render();
+            _pseudoIterativeElement.el.id = iter;
 
             delete _pseudoIterativeElement._pseudoState;
 
             _pseudoIterativeElement._pseudoState = {}
             _pseudoIterativeElement._pseudoState[iterativeStateName] = [_iterate];
-            pseudoElements.push(_pseudoIterativeElement.make());
+            pseudoElements.push(_pseudoIterativeElement.make('re'));
         }
         pseudoElements.forEach(el => {
             if (states) {
