@@ -64,8 +64,12 @@ class Spuck {
         // set properties (hard-coded or state-managed)
         if (this.prop) {
             if (this.prop.text) {
-                if (!this._check(this.prop.text)) el.innerHTML = this.prop.text;
-                else el.innerHTML = this._formatString(this.prop.text);
+                if (!this._check(this.prop.text)) el.innerText = this.prop.text;
+                else el.innerText = this._formatString(this.prop.text);
+            }
+            if (this.prop.html) {
+                if (!this._check(this.prop.html)) el.innerHTML = this.prop.html;
+                else el.innerHTML = this._formatString(this.prop.html);
             }
             if (this.prop.value) {
                 if (!this._check(this.prop.value)) el.value = this.prop.value;
